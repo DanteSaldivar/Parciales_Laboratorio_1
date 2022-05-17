@@ -49,6 +49,8 @@ int eUsuario_InicioDeSesion(eUsuario arrayUsuarios[], int length, int *ID, short
 
 	if (arrayUsuarios != NULL && length > 0 && ID != NULL)
 	{
+		puts("-----------------ingrese su datos de usuario--------------------------\n");
+
 		if (!utn_GetEmail("Ingrese su correo: ", "Correo no valido\n", 3, sizeof(auxiliarCorreo), auxiliarCorreo))
 		{
 			if (!utn_GetPassword("Ingrese su contrasenia: ", "La contrasenia no es Valida\n", 3, 3, sizeof(auxiliarPassword), auxiliarPassword))
@@ -271,6 +273,7 @@ void eUsuario_Hardcodeo(eUsuario *arrayUsuarios, int length)
 		arrayUsuarios[i].isEmpty = OCUPADO;
 		arrayUsuarios[i].tipo = USUARIO;
 	}
+
 	arrayUsuarios[0].idUsuario = 16;
 	strncpy(arrayUsuarios[0].correo, "ADMIN", sizeof(arrayUsuarios[0].correo));
 	strncpy(arrayUsuarios[0].password, "0000", sizeof(arrayUsuarios[0].password));

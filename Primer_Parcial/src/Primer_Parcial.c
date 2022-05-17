@@ -13,7 +13,7 @@
 #include "Biblioteca.h"
 #include "Relaciones.h"
 
-#define MAX_USERS 15
+#define MAX_USERS 250
 #define MAX_PRODUCTS 1000
 #define MAX_TRACKING 1000
 
@@ -39,7 +39,7 @@ int main(void)
 	{
 		mostrarTituloMenu(1);
 		banderaLogin = 0;
-		utn_GetNumero("\n1) INGRESAR\n2)REGISTRARSE\n\n3)Altas Forzadas\n\n0)SALIR\n\nOpcion: ", 3, -1, 3, "\nla Opcion no es valida\n", &respuestaPrincipal);
+		utn_GetNumero("\n1) INGRESAR\n2)REGISTRARSE\n\n3)Altas Forzadas\n\n0)SALIR\n\nOpcion: ", 3, -1, 4, "\nla Opcion no es valida\n", &respuestaPrincipal);
 
 		switch (respuestaPrincipal)
 		{
@@ -59,12 +59,13 @@ int main(void)
 				case ADMIN:
 					do
 					{
+						puts("-----------------------------------------------------");
 						mostrarTituloMenu(3);
 						if (!utn_GetNumero(
-								"\n1)Listar todos los Usuarios\n2)Listar todos los productos por categoria\n3)Baja de un producto\n4)Baja de un usuario\n5)Ver Tracking Global\n6)Salir\nOpcion : ", 3,
-								0, 7, "\nla Opcion no es valida\n", &respuestaSubMenu))
+								"\n1)Listar todos los Usuarios\n2)Listar todos los productos por categoria\n3)Baja de un producto\n4)Baja de un usuario\n5)Ver Tracking Global\n6)Filtrar Producto por nombre\n7)Salir\nOpcion : ", 3,
+								0, 8, "\nla Opcion no es valida\n", &respuestaSubMenu))
 						{
-							switch(respuestaSubMenu)
+							switch (respuestaSubMenu)
 							{
 							case 1:
 								eUsuario_ImprimirUsuarios(arrayUsuarios, MAX_USERS);
@@ -82,14 +83,18 @@ int main(void)
 							case 5:
 								eTracking_ImprimirTrackings(arrayTracking, MAX_TRACKING);
 								break;
+							case 6:
+								eProducto_FiltroDeNombre(arrayProductos, MAX_PRODUCTS);
+								break;
 							}
 						}
 
-					} while (respuestaSubMenu != 6);
+					} while (respuestaSubMenu != 7);
 					break;
 				case USUARIO:
 					do
 					{
+						puts("-----------------------------------------------------");
 						mostrarTituloMenu(2);
 						if (!utn_GetNumero("\n1)Comprar\n2)Vender\n3)Estado de compras\n4)Estado de Ventas\n\n5)Salir\nOpcion : ", 3, 0, 6, "\nla Opcion no es valida\n", &respuestaSubMenu))
 						{
@@ -99,13 +104,26 @@ int main(void)
 								eRelaciones_AltaCompra(arrayUsuarios, MAX_USERS, arrayProductos, MAX_PRODUCTS, arrayTracking, MAX_TRACKING, banderaConId);
 								break;
 							case 2:
-								eProducto_Alta(arrayProductos, MAX_PRODUCTS, banderaConId);
+								puts("-----------------------------------------------------");
+								if (!utn_GetNumero("1)Vender un producto\n2)Reponer Stocks\n\n3)Salir\n\n Opcion: ", 3, 0, 4, "Esa opcion no valida\n", &auxiliarVentas))
+								{
+									switch (auxiliarVentas)
+									{
+									case 1:
+										eProducto_Alta(arrayProductos, MAX_PRODUCTS, banderaConId);
+										break;
+									case 2:
+										eProducto_reponerStock(arrayProductos, MAX_PRODUCTS, banderaConId);
+										break;
+									}
+								}
 								break;
 							case 3:
 								eRelaciones_MostrarEstadoCompra(arrayUsuarios, MAX_USERS, arrayProductos, MAX_PRODUCTS, arrayTracking, MAX_TRACKING, banderaConId);
 								break;
 							case 4:
-								if (!utn_GetNumero("1)Listado de ventas finalizadas.\n2)Ver Productos", 3, 0, 3, "Esa opcion no valida\n", &auxiliarVentas))
+								puts("-----------------------------------------------------");
+								if (!utn_GetNumero("1)Listado de ventas finalizadas.\n2)Ver Productos.", 3, 0, 3, "Esa opcion no valida\n", &auxiliarVentas))
 								{
 									switch (auxiliarVentas)
 									{
@@ -113,7 +131,7 @@ int main(void)
 										eRelaciones_MostrarEstadoVentas(arrayUsuarios, MAX_USERS, arrayProductos, MAX_PRODUCTS, arrayTracking, MAX_TRACKING, banderaConId);
 										break;
 									case 2:
-										eProducto_ImprimirProductosPorUser(arrayProductos, MAX_PRODUCTS, banderaConId);
+										eProducto_ImprimirProductosPorUser(arrayProductos, MAX_PRODUCTS, banderaConId, 0);
 										break;
 									}
 								}
@@ -128,9 +146,9 @@ int main(void)
 				eUsuario_Alta(arrayUsuarios, MAX_USERS);
 				break;
 				case 3:
-					eUsuario_Hardcodeo(arrayUsuarios, MAX_USERS);
-					eProducto_Hardcodeo(arrayProductos, MAX_PRODUCTS);
-					break;
+				eUsuario_Hardcodeo(arrayUsuarios, MAX_USERS);
+				eProducto_Hardcodeo(arrayProductos, MAX_PRODUCTS);
+				break;
 			}
 		}
 	} while (respuestaPrincipal != 0);

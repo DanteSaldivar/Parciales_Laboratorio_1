@@ -56,12 +56,35 @@ void eProducto_ImprimirProducto(eProducto Producto);
  * 			se puede elegir un estado en concreto
  * @param arrayProductos  Array con los contenidos a modificar y trabajar
  * @param length Tamanio del Array
- * @param estado valor que determina si el elemento se encuentra 'libre', 'ocupado', 'baja'
  * @return Retorna el total dependiendo del estado al mostar los datos o un -1 si no hay nada que mostrar
  */
 int eProducto_ImprimirProductos(eProducto arrayProductos[], int length);
 
-int eProducto_ImprimirProductosPorUser(eProducto arrayProductos[], int length, int ID);
+
+/***
+ * \brief Agrega cantidades al Stock de un producto
+ * @param Producto variable Tipo Producto con la que se trabaja
+ * @return retorna un -1 si hubo un Error, un 0 Si no
+ */
+int eProducto_ReponerProducto(eProducto* Producto);
+
+/***
+ * \brief Se encarga de reponer Stock de un determinado producto
+ * @param arrayProductos Array con los contenidos a modificar y trabajar
+ * @param length Tamanio del Array
+ * @param ID id del usuario que loguea
+ * @return -1 si hubo un error, un 0 si no
+ */
+int eProducto_reponerStock(eProducto arrayProductos[], int length, int ID);
+/**
+ * \brief Imprime los Productos dependiendo la Id que reciba
+ * @param arrayProductos Array con los contenidos a modificar y trabajar
+ * @param length Tamanio del Array
+ * @param ID id del usuario que loguea
+ * @param banderaStock Si le das valor -1 muestra los productos sin stock, con valor 0, solo muestra los completos
+ * @return
+ */
+int eProducto_ImprimirProductosPorUser(eProducto arrayProductos[], int length, int ID, int banderaStock);
 
 /***
  * \brief Se encarga de pedir los datos que se quieran ingrear en un determinado elemento
@@ -87,23 +110,28 @@ int eProducto_RemoverProducto(eProducto arrayProductos[], int length);
  */
 int eProducto_Modificacion(eProducto arrayProductos[], int length);
 
-/**
- * \brief Se encarga de Calcular el total promedio de gastos de los pasajeros e imprime los superiores al promedio
- * @param arrayProductos Cadena que guarda a los pasajeros
- * @param ProductoLen	Tamanio de la Cadena
- * @return Retorna un -1 si hubo un error, o un 0 si salio bien
- */
-
-/* Ordenamiento*/
-
 /***
  * \brief Se encarga de ordenar los elementos de un array dependiendo del criterio elegido
- * @param arrayProductoss arrayProductoscon los contenidos a modificar y trabajar
+ * @param arrayProductoss array Productos con los contenidos a modificar y trabajar
  * @param length Tamanio del Array
  * @return retorna un 0 si se logro o un -1 si hubo un error
  */
 int eProducto_SortProducto(eProducto arrayProductos[], int length, int criterio);
 
+
+/***
+ * \brief Se encarga de matchear nombres de productos dependiende del Ingreso
+ * @param arrayProductos array Productos con los contenidos a modificar y trabajar
+ * @param length Tamanio del Array
+ * @return retorna un -1 si esta mal, un 0 si salio bien;
+ */
+int eProducto_FiltroDeNombre(eProducto arrayProductos[], int length);
+
+/***
+ * \brief Hardcodea unos productos
+ * @param arrayProductos  array Productos con los contenidos a modificar y trabajar
+ * @param length Tamanio del Array
+ */
 void eProducto_Hardcodeo(eProducto* arrayProductos, int length);
 
 #endif /* PRODUCTO_H_ */

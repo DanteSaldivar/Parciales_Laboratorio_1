@@ -98,10 +98,9 @@ void eProducto_ImprimirProducto(eProducto Producto)
 		strncpy(auxiliarCategoria, "DEPORTES", sizeof(auxiliarCategoria));
 		break;
 	}
-	printf("\t%-15s", auxiliarCategoria);
-	printf("%10s", auxiliarEstado);
-	printf("%10d\n", Producto.stock);
-	puts("=================================================================================");
+	printf("\t%-15s%10s%10d%19.2f", auxiliarCategoria, auxiliarEstado, Producto.stock, Producto.precio);
+
+	puts("\n==============================================================================================");
 }
 
 int eProducto_ImprimirProductos(eProducto arrayProductos[], int length)
@@ -117,9 +116,9 @@ int eProducto_ImprimirProductos(eProducto arrayProductos[], int length)
 			{
 				if (banderaMensaje)
 				{
-					puts("\n-----------------------------Lista de Productos----------------------------------");
-					printf("%5s%9s\t%33s\t%7s\t%16s\n", "ID", "NOMBRE", "CATEGORIA", "ESTADO", "UNIDADES");
-					puts("=================================================================================");
+					puts("\n-----------------------------------Lista de Productos-----------------------------------------");
+					printf("%5s%9s\t%33s\t%7s\t%16s\t%-10s\n", "ID", "NOMBRE", "CATEGORIA", "ESTADO", "UNIDADES", "PRECIO");
+					puts("==============================================================================================");
 					banderaMensaje = 0;
 				}
 				eProducto_ImprimirProducto(arrayProductos[i]);
@@ -131,7 +130,7 @@ int eProducto_ImprimirProductos(eProducto arrayProductos[], int length)
 	return retorno;
 }
 
-int eProducto_ImprimirProductosPorUser(eProducto arrayProductos[], int length, int ID)
+int eProducto_ImprimirProductosPorUser(eProducto arrayProductos[], int length, int ID, int banderaStock)
 {
 	int retorno = -1;
 	int banderaMensaje = 1;
@@ -142,17 +141,20 @@ int eProducto_ImprimirProductosPorUser(eProducto arrayProductos[], int length, i
 		{
 			if (arrayProductos[i].isEmpty != LIBRE)
 			{
-				if (arrayProductos[i].Fk_vendedor == ID && arrayProductos[i].stock > 0)
+				if (arrayProductos[i].Fk_vendedor == ID)
 				{
-					if (banderaMensaje)
+					if (arrayProductos[i].stock > banderaStock)
 					{
-						puts("\n-----------------------------Lista de Productos----------------------------------");
-						printf("%5s%9s\t%33s\t%7s\t%16s\n", "ID", "NOMBRE", "CATEGORIA", "ESTADO", "UNIDADES");
-						puts("=================================================================================");
-						banderaMensaje = 0;
+						if (banderaMensaje)
+						{
+							puts("\n-----------------------------------Lista de Productos-----------------------------------------");
+							printf("%5s%9s\t%33s\t%7s\t%16s\t%-10s\n", "ID", "NOMBRE", "CATEGORIA", "ESTADO", "UNIDADES", "PRECIO");
+							puts("==============================================================================================");
+							banderaMensaje = 0;
+						}
+						eProducto_ImprimirProducto(arrayProductos[i]);
+						retorno = 0;
 					}
-					eProducto_ImprimirProducto(arrayProductos[i]);
-					retorno = 0;
 				}
 			}
 		}
@@ -189,11 +191,61 @@ int eProducto_CargarDatos(eProducto *Producto)
 	return retorno;
 }
 
-eProducto eProducto_ModificarUno(eProducto Producto)
+int eProducto_ReponerProducto(eProducto *Producto)
 {
-	eProducto aux;
+	int retorno = -1;
+	int auxiliarStock;
+	if (Producto != NULL)
+	{
+		if (!utn_GetNumero("Cuanta cantidad desea Reponer? (MAX 300): ", 3, 0, 301, "La cantidad no es valida.\n", &auxiliarStock))
+		{
+			Producto->stock = Sumar(Producto->stock, auxiliarStock);
+			retorno = 0;
+		}
+	}
 
-	return aux;
+	return retorno;
+}
+
+int eProducto_reponerStock(eProducto arrayProductos[], int length, int ID)
+{
+	int retorno = -1;
+	int banderaImpresion = 0;
+	int index;
+	int idProducto;
+	eProducto auxiliar;
+	if (arrayProductos != NULL && length > 0 && ID > -1)
+	{
+		if (!eProducto_ImprimirProductosPorUser(arrayProductos, length, ID, -1))
+		{
+			puts("-----------------------------------------------------\n");
+			banderaImpresion = 1;
+		}
+		if (banderaImpresion)
+		{
+			utn_GetNumero("Ingrese el ID del Producto que quiera Reponer: ", 3, -1, 2001, "Error ID no valida\n", &idProducto);
+
+			index = eProducto_BuscarPorId(arrayProductos, length, idProducto);
+
+			while (index == -1)
+			{
+				puts("NO EXISTE ID.");
+				utn_GetNumero("Ingrese el ID del Producto que quiera Reponer: ", 3, -1, 2001, "Error ID no valida\n", &idProducto);
+				index = eProducto_BuscarPorId(arrayProductos, length, idProducto);
+			}
+			auxiliar = arrayProductos[index];
+			if (eProducto_ReponerProducto(&auxiliar))
+			{
+				if (validar_Salida_SN("Esta seguro que quiere Reponer? 'S' continuar , 'N' cancelar", "Opcion no valida\n", 3))
+				{
+					arrayProductos[index].stock = auxiliar.stock;
+				}
+				retorno = 0;
+			}
+		}
+	}
+
+	return retorno;
 }
 
 int eProducto_Alta(eProducto arrayProductos[], int length, int ID)
@@ -253,33 +305,39 @@ int eProducto_RemoverProducto(eProducto arrayProductos[], int length)
 	return retorno;
 }
 
-int eProducto_Modificacion(eProducto arrayProductos[], int length)
+int eProducto_FiltroDeNombre(eProducto arrayProductos[], int length)
 {
 	int retorno = -1;
-	int idProducto;
-	int index;
-	int banderaAltas;
-	eProducto auxiliar;
-
-	if (!eProducto_ImprimirProductos(arrayProductos, length))
+	int banderaMensaje = 1;
+	int i;
+	char auxiliarNombre[25];
+	if (arrayProductos != NULL && length)
 	{
-		banderaAltas = 1;
-	}
-	if (banderaAltas)
-	{
-		utn_GetNumero("Ingrese el ID para modificar", 3, -1, 2001, "Error ID no es valido\n", &idProducto);
+		if (!utn_GetAlfaNumerico("Ingrese el nombre del producto que quiera Filtrar: ", "El nombre no es valido\n", 3, 25, auxiliarNombre))
+		{
+			for (i = 0; i < length; i++)
+			{
+				if (arrayProductos[i].isEmpty != LIBRE)
+				{
 
-		index = eProducto_BuscarPorId(arrayProductos, length, idProducto);
-		while (index == -1)
-		{
-			puts("NO EXISTE ID.");
-			utn_GetNumero("Ingrese el ID para modificar", 3, -1, 2001, "Error ID no valida", &idProducto);
+					if (strncmp(arrayProductos[i].nombreDelProducto, auxiliarNombre, sizeof(arrayProductos[i].nombreDelProducto)) == 0)
+					{
+						if (banderaMensaje)
+						{
+							puts("\n-----------------------------------Lista de Productos-----------------------------------------");
+							printf("%5s%9s\t%33s\t%7s\t%16s\t%-10s\n", "ID", "NOMBRE", "CATEGORIA", "ESTADO", "UNIDADES", "PRECIO");
+							puts("==============================================================================================");
+							banderaMensaje = 0;
+						}
+
+						eProducto_ImprimirProducto(arrayProductos[i]);
+						retorno = 0;
+					}
+
+				}
+			}
 		}
-		auxiliar = eProducto_ModificarUno(arrayProductos[index]);
-		if (validar_Salida_SN("Esta seguro que quiere Modificar? 'S' continuar , 'N' cancelar", "Opcion no valida\n", 3))
-		{
-			arrayProductos[index] = auxiliar;
-		}
+
 	}
 	return retorno;
 }
@@ -295,7 +353,6 @@ int eProducto_SortProducto(eProducto arrayProductos[], int length, int criterio)
 	if (arrayProductos != NULL && length > 0)
 	{
 		nuevoLimite = length - 1;
-		//CRITERIO ES 1 MENOR A MAYOR, -1 MAYOR A MENOR
 		switch (criterio)
 		{
 		case 1:
@@ -304,9 +361,9 @@ int eProducto_SortProducto(eProducto arrayProductos[], int length, int criterio)
 				flagSwap = 0;
 				for (i = 0; i < nuevoLimite; i++)
 				{
-					if (arrayProductos[i].isEmpty == OCUPADO && arrayProductos[i + 1].isEmpty == OCUPADO)
+					if (arrayProductos[i].isEmpty != LIBRE && arrayProductos[i + 1].isEmpty != LIBRE)
 					{
-						if (arrayProductos[i].idProducto > arrayProductos[i + 1].idProducto)
+						if (arrayProductos[i].stock > arrayProductos[i + 1].stock)
 						{
 							flagSwap = 1;
 							buffer = arrayProductos[i];
@@ -318,7 +375,6 @@ int eProducto_SortProducto(eProducto arrayProductos[], int length, int criterio)
 				nuevoLimite--;
 			} while (flagSwap);
 
-			//ORDENO ALFABETICAMENTE CUANDO LOS TIPOS SEAN IGUALES
 			break;
 		case -1:
 			do
@@ -385,9 +441,6 @@ void eProducto_Hardcodeo(eProducto *arrayProductos, int length)
 		strncpy(arrayProductos[i].nombreDelProducto, nombreDelProducto[rand() % 10], sizeof(arrayProductos[i].nombreDelProducto));
 		arrayProductos[i].stock = rand() % 1000;
 		arrayProductos[i].categoria = categorias[rand() % 4];
-		//arrayProductos[i].password = password;
-		//arrayProductos[i].correo = correo[rand()%10];
-		//arrayProductos[i].direccion = direccion[rand()%5];
 		arrayProductos[i].precio = rand() % 1000;
 		arrayProductos[i].isEmpty = OCUPADO;
 	}
