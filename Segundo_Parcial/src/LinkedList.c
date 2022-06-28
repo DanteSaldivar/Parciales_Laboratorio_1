@@ -324,7 +324,7 @@ int ll_indexOf(LinkedList* this, void* pElement)
 
     		if(pAux == pElement)
     		{
-    			returnAux = 0;
+    			returnAux = i;
     			break;
     		}
     	}
@@ -578,4 +578,35 @@ int ll_sort(LinkedList* this, int (*pFunc)(void*, void*), int order)
     }
 
     return returnAux;
+}
+
+LinkedList* ll_filter(LinkedList* this, int(*Pfunc)(void*))
+{
+
+	void* pElementoA = NULL;
+	int lengthLista;
+	int criterio;
+
+	LinkedList* pAuxList = ll_newLinkedList();
+	if(this != NULL && Pfunc != NULL)
+	{
+
+		lengthLista = ll_len(this);
+
+		for(int i = 0; i < lengthLista - 1; i++)
+		{
+			pElementoA = ll_get(this, i);
+
+			if(pElementoA != NULL)
+			{
+				criterio = Pfunc(pElementoA);
+
+				if(criterio)
+				{
+					ll_add(pAuxList, pElementoA);
+				}
+			}
+		}
+	}
+	return pAuxList;
 }

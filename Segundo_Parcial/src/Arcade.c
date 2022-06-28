@@ -490,3 +490,29 @@ int Arcade_criteroIdJuego(void* ArcadeA, void* ArcadeB)
 	}
 	return retorno;
 }
+
+
+///FILTER
+
+int Arcade_filterByNacionalidadJapon(void* ArcadeA)
+{
+	int retorno = 0;
+
+	char auxNacionalidadA[50];
+	Arcade* pAuxA;
+
+	if(ArcadeA != NULL)
+	{
+		pAuxA = (Arcade*)ArcadeA;
+
+		if(!Arcade_getNacionalidad(pAuxA, auxNacionalidadA))
+		{
+			if(strncmp(auxNacionalidadA,"Japan",sizeof(auxNacionalidadA)) == 0)
+			{
+				retorno = 1;
+			}
+		}
+	}
+
+	return retorno;
+}

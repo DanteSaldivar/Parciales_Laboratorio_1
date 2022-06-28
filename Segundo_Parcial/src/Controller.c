@@ -257,8 +257,8 @@ int controller_listArcade(LinkedList* pArrayListArcade, LinkedList* pArrayListSa
 	}
 
 	return retorno;
-
 }
+
 
 ////------------------------------------------------------------JUEGOS----------------------------------------------------///
 

@@ -42,6 +42,7 @@ int controller_removeArcade(LinkedList* pArrayListArcade, LinkedList* pArrayList
 
 int controller_listArcade(LinkedList* pArrayListArcade, LinkedList* pArrayListSalon,LinkedList* pArrayListJuegos, int tipo);
 
+
 ///-----------------------JUEGO--------------------------------------///
 
 int controller_addJuego(LinkedList* pArrayListJuegos);

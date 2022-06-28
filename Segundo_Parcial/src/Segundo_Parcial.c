@@ -4,6 +4,9 @@
  	 DIVISON H.
  	 PARCIAL_2
 
+
+Agregar funcion FILTER
+
  ============================================================================
  */
 
@@ -20,6 +23,8 @@ int main(void) {
 	LinkedList* listaJuegos = ll_newLinkedList();
 	LinkedList* listaSalones = ll_newLinkedList();
 	LinkedList* listaArcades = ll_newLinkedList();
+	LinkedList* NewLinked = ll_newLinkedList();
+
 
 
 	controller_findId("MOCK_SALON.csv", "LastIdSalon.bin", "MOCK_ARCADE.csv", "LastIdArcade.bin", "MOCK_JUEGOS.csv", "LastIdJuego.bin");
@@ -29,7 +34,7 @@ int main(void) {
 	{
 		puts("*********************************************************************************************************************************************");
 		if(!utn_GetNumero("\t\tBienvenido\n\nMenu opciones:\nSALON\n1)Alta Salon\n2)Eliminar Salon\n3)Listar Salones\nARCADES\n4)Incorporar Arcade"
-				"\n5)Modificar Arcade\n6)Eliminar Arcade\n7)Listar Arcades\nJUEGOS\n8)Agregar Juego\n9)Imprimir Juegos\n\n10)INFORMES\n\n11)Salir\nOpcion: "
+				"\n5)Modificar Arcade\n6)Eliminar Arcade\n7)Listar Arcades\nJUEGOS\n8)Agregar Juego\n9)Imprimir Juegos\n\n10)INFORMES\n\n11)Filtrar\n12)Salir\nOpcion: "
 				, 3, 0, 12, "\nEror, opcion no Valida.\n", &opcionMenu))
 		{
 			switch(opcionMenu)
@@ -151,6 +156,11 @@ int main(void) {
 
 				}while(opcionSubMenu != 8);
 				break;
+			case 11:
+				 NewLinked = ll_filter(listaArcades, Arcade_filterByNacionalidadJapon);
+
+				controller_listArcade(NewLinked, listaSalones, listaJuegos, 1);
+				break;
 			}
 
 		}
@@ -162,7 +172,7 @@ int main(void) {
 	Salon_saveSalonAsText("MOCK_SALON.csv", listaSalones);
 	relaciones_saveArcadeAsText("MOCK_ARCADE.csv", listaArcades);
 
-	}while(opcionMenu != 11);
+	}while(opcionMenu != 12);
 	return 0;
 }
 

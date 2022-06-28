@@ -67,6 +67,10 @@ int Arcade_criteroNacionalidad(void* ArcadeA, void* ArcadeB);
 int Arcade_criteroIdJuego(void* ArcadeA, void* ArcadeB);
 
 
+///FILTER
+
+int Arcade_filterByNacionalidadJapon(void* ArcadeA);
+
 
 
 
